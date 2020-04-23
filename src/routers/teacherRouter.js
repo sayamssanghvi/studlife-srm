@@ -8,7 +8,7 @@ const multer=require('multer');
 
 var upload=multer({
     limits:{
-        fileSize:5000000
+        fileSize:2000000
     },fileFilter(req,file,cb){
         if(!file.originalname.match(/\.pdf/)){
             return cb(new Error("Please upload a pdf file"))
@@ -35,12 +35,12 @@ router.post("/teacher/login",async (req,res)=>{
     try{
         const teacher=await Teacher.findByCredentials(req.body.email,req.body.password);
         if(!teacher)
-            res.send("Invalid username or password");
+            res.status(400).send("Invalid username or password");
         let token=await teacher.generateAuthToken();
         res.send({teacher:teacher.getPublicProfile(),token});
     }catch(e){
         console.log(e);
-        res.send(e.toString());
+        res.status(500).send(e.toString());
     }
 })
 
@@ -106,6 +106,35 @@ router.post("/teacher/upload/:coursename/finalpaper",teacherAuth,upload.single('
     }
 },(error,req,res,next)=>{
     res.status(400).send({error:error.message});
+});
+
+router.delete('/teacher/delete/ct/:ctid',teacherAuth,async (req,res)=>{
+    try{
+        let ct=await Ct.findOne({_id:req.params.ctid});
+        if(!ct)
+            res.status(404).send("The requested Ct paper does not exist.")
+        let publicProfile=await ct.getPublicProfile();        
+        await ct.remove();
+        console.log(publicProfile);
+        res.send(publicProfile);
+    }catch(e){
+        console.log(e);
+        res.send(e.toString());
+    }
+});
+
+router.delete('/teacher/delete/finalpaper/:finalpaperid',teacherAuth,async (req,res)=>{
+    try{
+        let finalPaper=await Finalpaper.findOne({_id:req.params.finalpaperid});
+        if(!finalPaper)
+            res.status(404).send("The requested FinalPaper does not exist.")
+        let publicProfile=await finalPaper.getPublicProfile();    
+        await finalPaper.remove();
+        res.send(publicProfile);
+    }catch(e){
+        console.log(e);
+        res.send(e.toString());
+    }
 });
 
 module.exports=router;
