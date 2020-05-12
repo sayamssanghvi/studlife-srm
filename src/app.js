@@ -6,11 +6,13 @@ const Teacher=require('./models/Teacher');
 const adminRouter=require('./routers/adminRouter');
 const teacherRouter=require('./routers/teacherRouter');
 const userRouter=require('./routers/userRouter');
+const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT;
 
 app.use(express.json());
+app.use(cors());
 app.use(adminRouter);
 app.use(teacherRouter);
 app.use(userRouter);

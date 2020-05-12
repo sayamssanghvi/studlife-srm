@@ -119,7 +119,7 @@ router.delete('/teacher/delete/ct/:ctid',teacherAuth,async (req,res)=>{
         res.send(publicProfile);
     }catch(e){
         console.log(e);
-        res.send(e.toString());
+        res.status(400).send(e.toString());
     }
 });
 
@@ -133,7 +133,7 @@ router.delete('/teacher/delete/finalpaper/:finalpaperid',teacherAuth,async (req,
         res.send(publicProfile);
     }catch(e){
         console.log(e);
-        res.send(e.toString());
+        res.status(400).send(e.toString());
     }
 });
 

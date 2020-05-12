@@ -1,7 +1,7 @@
 const express=require('express');
 const Course=require('../models/Course');
 const Ct=require('../models/Ct');
-const Finalpaper=require('../models/Finalpaper');
+const Finalpaper = require('../models/Finalpaper');
 
 const router=express.Router();
 
@@ -14,6 +14,8 @@ router.get('/course',async (req,res)=>{
     try{
         
         let course=await Course.find();
+        if(!course.length)
+            res.status(400).send({status:'This folder is currently emprty'})
         res.send({course});
     }catch(e){
         console.log(e);
