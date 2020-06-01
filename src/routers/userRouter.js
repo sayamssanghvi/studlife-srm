@@ -35,6 +35,9 @@ router.get('/course/:course/ct',async(req,res)=>{
         }
         let course=await Course.findOne({coursename:req.params.course});
         
+        if (!course)
+            return res.send({status:"Sorry but this course is not yet added to the database"});    
+        
         await course.populate({
             path:'ct',
             match,

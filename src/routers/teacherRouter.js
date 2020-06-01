@@ -35,7 +35,7 @@ router.post("/teacher/login",async (req,res)=>{
     try{
         const teacher=await Teacher.findByCredentials(req.body.email,req.body.password);
         if(!teacher)
-            res.status(400).send("Invalid username or password");
+            res.status(404).send("Invalid username or password");
         let token=await teacher.generateAuthToken();
         res.send({teacher:teacher.getPublicProfile(),token});
     }catch(e){
