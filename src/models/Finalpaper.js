@@ -7,6 +7,7 @@ let Schema=new mongoose.Schema({
     },
     filename:{
         type:String,
+        unique:true,
         required:true,
         trim:true
     },
