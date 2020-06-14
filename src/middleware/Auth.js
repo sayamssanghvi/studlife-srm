@@ -11,12 +11,12 @@ const Auth=async(req,res,next)=>{
         var id = await jwt.verify(atoken, process.env.AUTH_SECRET_KEY);
         var admin = await Admin.findOne({ _id: id._id , 'tokens.token':atoken });
         if(!admin)
-            re.status(404).send("Unable to Logout");
+            res.status(404).send("Invalid Authentication");
         req.admin = admin;
         next();
     }catch(e){
         console.log(e);
-        res.status(401).send("Unable to Logout");
+        res.status(401).send("Invalid Authentication");
     }
    
 }

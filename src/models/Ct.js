@@ -2,7 +2,7 @@ const mongoose=require('mongoose');
 
 let Schema=new mongoose.Schema({
     file:{
-        type:Buffer,
+        type:String,
         required:true
     },
     filename:{
@@ -18,13 +18,6 @@ let Schema=new mongoose.Schema({
 },{
     timestamps:true
 })
-
-Schema.methods.getPublicProfile=async function(){
-    var finalpaper=this;
-    var object=finalpaper.toObject();
-    delete object.file;
-    return  object;
-}
 
 let Ct=mongoose.model('Ct',Schema);
 

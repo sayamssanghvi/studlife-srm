@@ -1,12 +1,16 @@
 const express = require("express");
 require('./db/mongoose');
-const Admin=require('./models/Admin');
-const Auth=require('./middleware/Auth');
-const Teacher=require('./models/Teacher');
-const adminRouter=require('./routers/adminRouter');
+var admin = require("firebase-admin");
+var serviceAccount = require("../serviceAccountKey.json");
+const adminRouter = require('./routers/adminRouter');
 const teacherRouter=require('./routers/teacherRouter');
 const userRouter=require('./routers/userRouter');
 const cors = require('cors');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: "studlifesrm.appspot.com",
+});
 
 const app = express();
 const port = process.env.PORT;
