@@ -8,12 +8,26 @@ var storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         filename = 'tempUploads/' + file.originalname;
+        
         cb(undefined, file.originalname);
     }
 });
 
 const Filename =() => {
     return filename;
+}
+
+const getFilesizeInBytes = () => {
+    return Promise((resolve,reject)=>{
+        try{
+        var stats = fs.statSync(filename);
+        var fileSizeInBytes = stats["size"];
+        resolve(fileSizeInBytes);
+        }catch(e)
+        {
+            reject(e);
+        }
+    });
 }
 
 var upload = multer({
