@@ -3,14 +3,16 @@ const Course = require("../models/Course");
 const Ct = require("../models/Ct");
 const Finalpaper = require("../models/Finalpaper");
 const User = require("../models/User");
+const Auth = require("../middleware/Auth");
+const utils = require('../utils/user');
 
 const router = express.Router();
 
-router.post("/user/signup", async (req, res) => {
-  let user = new User();
-});
+router.get('/user/rooms', async (req, res) => {
+  res.send(utils.rooms);
+})
 
-router.get("/course", async (req, res) => {
+router.get("/user/course", async (req, res) => {
   try {
     let course = await Course.find();
     if (!course.length)
@@ -22,7 +24,7 @@ router.get("/course", async (req, res) => {
   }
 });
 
-router.get("/course/:course/ct", async (req, res) => {
+router.get("/user/course/:course/ct",Auth,async (req, res) => {
   try {
     var match = {};
     var sort = {};
@@ -62,7 +64,7 @@ router.get("/course/:course/ct", async (req, res) => {
   }
 });
 
-router.get("/course/:course/finalpaper", async (req, res) => {
+router.get("/user/course/:course/finalpaper",Auth,async (req, res) => {
   try {
     var match = {};
     var sort = {};
@@ -98,7 +100,7 @@ router.get("/course/:course/finalpaper", async (req, res) => {
   }
 });
 
-router.get("/download/ct/:ctid", async (req, res) => {
+router.get("/user/download/ct/:ctid",Auth,async (req, res) => {
   try {
     let ct = await Ct.findOne({ _id:req.params.ctid });
     res.redirect(ct.file);  
@@ -108,7 +110,7 @@ router.get("/download/ct/:ctid", async (req, res) => {
   }
 });
 
-router.get("/download/finalpaper/:finalpaperid", async (req, res) => {
+router.get("/user/download/finalpaper/:finalpaperid",Auth, async (req, res) => {
   try {
     let finalPaper = await Finalpaper.findOne({ _id: req.params.finalpaperid });
     res.redirect(finalPaper.file);

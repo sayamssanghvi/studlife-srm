@@ -24,23 +24,8 @@ const Schema=new mongoose.Schema({
             if (value.toLowerCase().includes("password"))
                 throw new Error("Your password cannot be  \"password\" ");
         }
-    },
-    tokens:[
-        {
-            token:{
-                type:String
-            }
-        }
-    ]
+    }
 });
-
-Schema.methods.generateAuthToken=async function(){
-    let teacher =this;
-    let token=await jwt.sign({_id:teacher._id.toString()},process.env.AUTH_SECRET_KEY);
-    teacher.tokens = teacher.tokens.concat({ token });
-    await teacher.save();
-    return token;
-}
 
 Schema.methods.getPublicProfile=function(){
     const teacher=this;

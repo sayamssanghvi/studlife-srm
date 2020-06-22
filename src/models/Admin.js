@@ -24,23 +24,8 @@ var Schema=new mongoose.Schema({
             if(value.toLowerCase().includes("password"))
                 throw new Error("Your password cannot be  \"passwor\" ");
         }
-    },
-    tokens:[{
-        token:{
-            type:String,
-            required:true
-        }
-    }]
+    }
 });
-
-Schema.methods.generateAuthToken=async function(){
-    var admin=this;
-    const token = await jwt.sign({ _id: admin._id.toString()}, process.env.AUTH_SECRET_KEY);
-    admin.tokens = admin.tokens.concat({token});
-    await admin.save();
-    return token;
-}
-
 
 Schema.statics.findByCredentials=async(email,password)=>{
 
