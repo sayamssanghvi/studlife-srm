@@ -8,6 +8,7 @@ var storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         filename = 'tempUploads/' + file.originalname;
+        
         cb(undefined, file.originalname);
     }
 });
