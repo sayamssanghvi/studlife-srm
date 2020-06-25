@@ -14,16 +14,6 @@ const Schema=new mongoose.Schema({
             if (!validator.isEmail(value))
                 throw new Error("Enter a valid mail ID");
         }
-    },
-    password: {
-        required: true,
-        type: String,
-        trim: true,
-        minlength: 6,
-        validate(value) {
-            if (value.toLowerCase().includes("password"))
-                throw new Error("Your password cannot be  \"password\" ");
-        }
     }
 });
 
@@ -48,14 +38,6 @@ Schema.statics.findByCredentials=async function(email,password){
 
     return teacher;
 }
-
-Schema.pre('save',async function(next){
-
-    var teacher=this;
-    if (teacher.isModified('password'))
-        teacher.password = await bcrypt.hash(teacher.password, 8);
-    next();
-});
 
 var Teacher=mongoose.model('Teacher',Schema);
 

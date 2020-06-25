@@ -1,6 +1,7 @@
 const express = require('express');
 var admin = require("firebase-admin");
-const Teacher=require('../models/Teacher');
+const Teacher = require('../models/Teacher');
+const User=require('../models/User')
 const Ct=require('../models/Ct');
 const Course=require('../models/Course');
 const Finalpaper = require('../models/Finalpaper');
@@ -12,7 +13,32 @@ const fs = require('fs');
 var router=express.Router();
 var bucketName = "studlifesrm.appspot.com";
 
-router.post('/teacher/upload/course',Auth,async(req,res)=>{
+router.post('/teacher/signup', async (req, res) => {
+    
+    try {
+        var teacher = new Teacher(req.body);
+        await teacher.save();
+        res.send({status:"User Saved"})
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(e.toString());
+    }
+})
+
+router.post('/teacher/student/head', Auth, async (req, res) => {
+    try {
+        var user = await User.findOne(req.body.email);
+        if (!user)
+            return res.status(404).send({ "error": "Please Enter a valid Address" });
+        user.mode = "Head";
+        res.send(user.getPublicProfile());
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(e.toString());
+    }
+});
+
+router.post('/teacher/upload/course', Auth, async (req, res) => {
     try{
         var course=new Course(req.body);
         if(!course)

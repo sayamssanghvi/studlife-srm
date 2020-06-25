@@ -3,16 +3,111 @@ const Course = require("../models/Course");
 const Ct = require("../models/Ct");
 const Finalpaper = require("../models/Finalpaper");
 const User = require("../models/User");
+const Rooms = require('../models/Rooms');
 const Auth = require("../middleware/Auth");
-const utils = require('../utils/user');
+const Utils = require('../utils/user');
 
 const router = express.Router();
 
-router.get('/user/rooms', async (req, res) => {
-  res.send(utils.rooms);
-})
+//User signup
+router.post('/user/signup', async (req, res) => {
+  try {
+    var user = new User(req.body);
+    if (!user)
+      return res.status(404).send({ error: "Please enter valid details" });
+    await user.save();
+    res.send({ status: "User Saved" });
+  } catch (e) {
+    console.log(e);
+    res.send(e.toString());
+  }
+});
 
-router.get("/user/course", async (req, res) => {
+//Creating official Rooms
+router.post('/user/createRoom', async (req, res) => {
+  try { 
+    var user = await User.findOne(req.body.email);
+    if (!user)
+      return res.status(404).send({ error: "User does not exist" });
+    if (user.mode != "Head")
+      return res.status(404).send({ error: "User is not Head" });
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e.toString());
+  }
+});
+
+
+//Users in Official Rooms
+router.get("/user/rooms/official", Auth, async (req, res) => {
+  try {
+    var userInEachRoom = [];
+    var rooms = await Rooms.find();
+    var officialRooms = [];
+    console.log(rooms);
+
+    rooms.forEach((room) => {
+      let length = Utils.User.filter((value) => {
+        return value.room == room.Name;
+      }).length;
+      officialRooms.push(room.Name);
+      userInEachRoom.push(length);
+    });
+
+    var data = {
+      Rooms:officialRooms ,
+      userInEachRoom,
+      TotalUsers: Utils.AllUser,
+    };
+    res.send({ data });
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e.toString());
+  }
+});
+
+//Users in SecondaryRooms
+router.get('/user/rooms/secondary', Auth, async (req, res) => {
+  
+  try {
+    
+    var userInEachRoom = [];
+    
+    if (!Utils.Rooms.length)
+      return res.status(400).send({ Roooms: 0, userInEachRoom: 0 });
+    
+    Utils.Rooms.forEach((room) => {
+      let length = Utils.User.filter((value) => {
+        return value.room == room;
+      }).length;
+      userInEachRoom.push(length);
+    })
+
+    var data = {
+      Rooms:Utils.Rooms,
+      userInEachRoom,
+      TotalUsers: Utils.AllUser
+    };
+    res.send({ data });
+  } catch (e){
+    console.log(e);
+    res.status(500).send(e.toString());
+  }
+});
+
+//get All Users in Database
+router.get('/user', Auth, async (req, res) => {
+  try {
+    var user = await User.find();
+    res.send(user.getPublicProfile());
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e.toString());
+  }
+});
+
+//Get All Course
+router.get("/user/course", Auth, async (req, res) => {
   try {
     let course = await Course.find();
     if (!course.length)

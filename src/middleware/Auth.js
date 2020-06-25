@@ -1,13 +1,31 @@
 const admin = require("firebase-admin");
+var firebase = require('firebase');
+var auth = require('firebase/auth');
 const Admin = require('../models/Admin');
 const Teacher = require('../models/Teacher');
 const User = require('../models/User');
+
+var firebaseConfig = {
+  apiKey: "AIzaSyD9s3PS2xfCb1vp7Z8mvFHpsg-_P_ggKYo",
+  authDomain: "studlifesrm.firebaseapp.com",
+  databaseURL: "https://studlifesrm.firebaseio.com",
+  projectId: "studlifesrm",
+  storageBucket: "studlifesrm.appspot.com",
+  messagingSenderId: "499210001566",
+  appId: "1:499210001566:web:84323ef0477f66936d6f8f",
+  measurementId: "G-5M80F8L5D3",
+};
+app=firebase.initializeApp(firebaseConfig);
 
 const Auth=async(req,res,next)=>{
 
     try {
         let route = req.route.path.split('/');
-        let payload = await admin.auth().verifyIdToken(req.headers.token);
+        
+        let credential = await app.auth().signInWithEmailAndPassword('s3sanghvi@gmail.com', '9381001171');
+// req.headers.token,JSON.stringify(await credential.user.getIdToken())
+        let jwt = await credential.user.getIdToken();
+        let payload = await admin.auth().verifyIdToken(jwt);
         if (!payload.email) throw new Error("Please Authenticate");
         req.body.owner = payload.email;
         
