@@ -47,7 +47,7 @@ router.get("/user/rooms/official", Auth, async (req, res) => {
     console.log(rooms);
 
     rooms.forEach((room) => {
-      let length = Utils.User.filter((value) => {
+      let length = Object.values(Utils.User).filter((value) => {
         return value.room == room.Name;
       }).length;
       officialRooms.push(room.Name);
@@ -77,7 +77,7 @@ router.get('/user/rooms/secondary', Auth, async (req, res) => {
       return res.status(400).send({ Roooms: 0, userInEachRoom: 0 });
     
     Utils.Rooms.forEach((room) => {
-      let length = Utils.User.filter((value) => {
+      let length = Object.values(Utils.User).filter((value) => {
         return value.room == room;
       }).length;
       userInEachRoom.push(length);
