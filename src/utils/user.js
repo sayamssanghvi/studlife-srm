@@ -1,5 +1,5 @@
 var AllUser = 0;
-var User = [];
+var User = {};
 var Rooms = [];
 
 var addUser = (id, username, room) => {
@@ -8,17 +8,13 @@ var addUser = (id, username, room) => {
         username,
         room
     };
-    User.push(user);
+    User[user.id]=user;
     if (Rooms.length == 0 || !Rooms.includes(room))
         Rooms.push(user.room);
 }
 
 var removeUser = (id) => {
-    var index = User.findIndex((value) => {
-        if (value.id == id)
-            return value;
-    });
-    User.splice(index, 1);
+    if(User[id]) delete User[id];
 }
 
 module.exports = {
