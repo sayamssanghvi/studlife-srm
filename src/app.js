@@ -47,17 +47,12 @@ io.on('connection', (socket) => {
   });  
 
   socket.on('sendMessage', ({ username, message}) => {
-    let user = User.find((value) => {
-      if (value.id == socket.id)
-        return value.room;
-    });
+    let user = User[socket.id];
     socket.broadcast.to(user.room).emit("receiveMessage", { username, message:filter.clean(message) });
   });
 
   socket.on('leave', () => {
-    let user = User.find((value) => {
-      if (value.id == socket.id) return value;
-    });
+    let user = User[socket.id];
     removeUser(socket.id);
     socket.broadcast.to(user.room).emit("Welcome", user.username + " has left the room");
     io.to(user.room).emit("roomData", User); 
