@@ -42,33 +42,56 @@
 // else
 //     console.log("SuperDance");
 
-var Rooms = [
-    "Electronics", "robotics", "CampusLife", "I.E", "general"
-];
-var User = [
-//   {
-//     username: "sausad",
-//     room: "Electronics",
-//   },
-//   {
-//     username: "sadfg",
-//     room: "general",
-//   },
-//   {
-//     username: "fsdfgf",
-//     room: "general",
-//     },
-//     {
-//         username: "uytghsa",
-//         room:"Electronics"
-//   }
-];
+// var Rooms = [
+//     "Electronics", "robotics", "CampusLife", "I.E", "general"
+// ];
+// var User = [
+// //   {
+// //     username: "sausad",
+// //     room: "Electronics",
+// //   },
+// //   {
+// //     username: "sadfg",
+// //     room: "general",
+// //   },
+// //   {
+// //     username: "fsdfgf",
+// //     room: "general",
+// //     },
+// //     {
+// //         username: "uytghsa",
+// //         room:"Electronics"
+// //   }
+// ];
 
-var userInEachRoom=[];
-Rooms.forEach((room) => {
-  let length = User.filter((value) => {
-    return value.room == room;
-  }).length;
-  userInEachRoom.push(length);
-});
-console.log(userInEachRoom);
+// var userInEachRoom=[];
+// Rooms.forEach((room) => {
+//   let length = User.filter((value) => {
+//     return value.room == room;
+//   }).length;
+//   userInEachRoom.push(length);
+// });
+// console.log(userInEachRoom);
+
+var Collection = new Map();
+var room = 'Sayam';
+var block = {
+  sent: 'Rahul',
+  timestamp: 15365984,
+  message: 'Hi everybody'
+}
+var Messages = [];
+Messages.push(block);
+Collection.set(room, Messages);
+var block2 = {
+  sent: "Rahul",
+  timestamp: 15365984,
+  message: "Bye",
+};
+var addMessage = (room) => {
+  return room;
+};
+Messages.push(block2);
+Collection[room]= Messages;
+var M = Collection.get(addMessage('Sayam'));
+console.log(Collection);
