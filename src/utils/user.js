@@ -28,11 +28,11 @@ var addMessage = (id, username, room,message) => {
         var Messages = Collection.get(room);
         if (Messages.length < 10) {
             Messages.push(data);
-            Collection.set(room, Messages);
+            // Collection.set(room, Messages);
         }else if (Messages.length == 10) {
             Messages.shift();
             Messages.push(data);
-            Collection.set(room, Messages);
+            // Collection.set(room, Messages);
         }
     }
 }
