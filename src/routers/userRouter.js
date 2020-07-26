@@ -12,6 +12,9 @@ const router = express.Router();
 //Storing user on MongoDB
 router.post('/user/signup', async (req, res) => {
   try {
+    let payload = await admin.auth().verifyIdToken(req.headers.token);
+    if (!payload.email)
+      throw new Error("Please Authenticate");
     var user = new User(req.body);
     if (!user)
       return res.status(404).send({ error: "Please enter valid details" });
@@ -24,7 +27,7 @@ router.post('/user/signup', async (req, res) => {
 });
 
 //Creating official Rooms
-router.post('/user/createRoom', async (req, res) => {
+router.post('/user/createRoom',Auth,async (req, res) => {
   try {
     var user = await User.findOne({email:req.body.email});
     if (!user)
