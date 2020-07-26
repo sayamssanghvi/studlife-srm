@@ -9,7 +9,7 @@ const Utils = require('../utils/user');
 
 const router = express.Router();
 
-//User signup
+//Storing user on MongoDB
 router.post('/user/signup', async (req, res) => {
   try {
     var user = new User(req.body);
@@ -25,70 +25,80 @@ router.post('/user/signup', async (req, res) => {
 
 //Creating official Rooms
 router.post('/user/createRoom', async (req, res) => {
-  try { 
-    var user = await User.findOne(req.body.email);
+  try {
+    var user = await User.findOne({email:req.body.email});
     if (!user)
       return res.status(404).send({ error: "User does not exist" });
     if (user.mode != "Head")
       return res.status(404).send({ error: "User is not Head" });
+    var room = new Rooms({ 
+      roomName: req.body.room
+    });
+    await room.save();
+    res.send({ "status": 200 });
   } catch (e) {
     console.log(e);
     res.status(500).send(e.toString());
   }
 });
 
-
-//Users in Official Rooms
+//This route gives All the Data of Official Rooms(Rooms,usersInEachRoom,Total User) returns an object
 router.get("/user/rooms/official", Auth, async (req, res) => {
   try {
-    var userInEachRoom = [];
     var rooms = await Rooms.find();
+    if (!rooms.length) {
+      return res.status(400).send({ Rooms: 0, TotalUsers: Utils.getTotalUser() });
+    }
     var officialRooms = [];
-    console.log(rooms);
 
     rooms.forEach((room) => {
-      let length = Object.values(Utils.User).filter((value) => {
-        return value.room == room.Name;
-      }).length;
-      officialRooms.push(room.Name);
-      userInEachRoom.push(length);
+      let length = Utils.UsersInCurrentRoom(room.roomName).length;
+      let temp = {
+        roomName:room.roomName,
+        userInRoom:length
+      };
+      officialRooms.push(temp);
     });
 
     var data = {
       Rooms:officialRooms ,
-      userInEachRoom,
-      TotalUsers: Utils.AllUser,
+      TotalUsers: Utils.getTotalUser(),
     };
-    res.send({ data });
+    res.send( data );
   } catch (e) {
     console.log(e);
     res.status(500).send(e.toString());
   }
 });
 
-//Users in SecondaryRooms
+//This route gives All the Data of Secondary Rooms(Rooms,usersInEachRoom,Total User) return an object
 router.get('/user/rooms/secondary', Auth, async (req, res) => {
   
   try {
     
-    var userInEachRoom = [];
-    
+    var secondaryRooms = [];
+
     if (!Utils.Rooms.length)
-      return res.status(400).send({ Roooms: 0, userInEachRoom: 0 });
+      return res.status(400).send({ Rooms: 0, userInEachRoom: 0 });
+    
     
     Utils.Rooms.forEach((room) => {
-      let length = Object.values(Utils.User).filter((value) => {
-        return value.room == room;
-      }).length;
-      userInEachRoom.push(length);
+      if (!room.official)
+      {
+        let length = Utils.UsersInCurrentRoom(room.roomName).length;
+        let temp = {
+          roomName:room.roomName,
+          userInRoom: length
+        }
+        secondaryRooms.push(temp);
+      }
     })
 
     var data = {
-      Rooms:Utils.Rooms,
-      userInEachRoom,
-      TotalUsers: Utils.AllUser
+      Rooms:secondaryRooms,
+      TotalUsers: Utils.getTotalUser()
     };
-    res.send({ data });
+    res.send( data );
   } catch (e){
     console.log(e);
     res.status(500).send(e.toString());
@@ -98,8 +108,12 @@ router.get('/user/rooms/secondary', Auth, async (req, res) => {
 //get All Users in Database
 router.get('/user', Auth, async (req, res) => {
   try {
-    var user = await User.find();
-    res.send(user.getPublicProfile());
+    var users = await User.find();
+    var userPublicProfiles = [];
+    users.forEach((user) => {
+      userPublicProfiles.push(user.getPublicProfile());
+    });
+    res.send(userPublicProfiles);
   } catch (e) {
     console.log(e);
     res.status(500).send(e.toString());
@@ -119,6 +133,7 @@ router.get("/user/course", Auth, async (req, res) => {
   }
 });
 
+//All the avialable Ct papers
 router.get("/user/course/:course/ct",Auth,async (req, res) => {
   try {
     var match = {};
@@ -159,6 +174,7 @@ router.get("/user/course/:course/ct",Auth,async (req, res) => {
   }
 });
 
+//All the avialable FinalPaper
 router.get("/user/course/:course/finalpaper",Auth,async (req, res) => {
   try {
     var match = {};
@@ -195,6 +211,7 @@ router.get("/user/course/:course/finalpaper",Auth,async (req, res) => {
   }
 });
 
+//Specific CT paper
 router.get("/user/download/ct/:ctid",Auth,async (req, res) => {
   try {
     let ct = await Ct.findOne({ _id:req.params.ctid });
@@ -205,6 +222,7 @@ router.get("/user/download/ct/:ctid",Auth,async (req, res) => {
   }
 });
 
+//Specific FinalPaper
 router.get("/user/download/finalpaper/:finalpaperid",Auth, async (req, res) => {
   try {
     let finalPaper = await Finalpaper.findOne({ _id: req.params.finalpaperid });

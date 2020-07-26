@@ -73,25 +73,43 @@
 // });
 // console.log(userInEachRoom);
 
-var Collection = new Map();
-var room = 'Sayam';
-var block = {
-  sent: 'Rahul',
-  timestamp: 15365984,
-  message: 'Hi everybody'
-}
-var Messages = [];
-Messages.push(block);
-Collection.set(room, Messages);
-var block2 = {
-  sent: "Rahul",
-  timestamp: 15365984,
-  message: "Bye",
-};
-var addMessage = (room) => {
-  return room;
-};
-Messages.push(block2);
-Collection[room]= Messages;
-var M = Collection.get(addMessage('Sayam'));
-console.log(Collection);
+// var Collection = new Map();
+// var room = 'Sayam';
+// var block = {
+//   sent: 'Rahul',
+//   timestamp: 15365984,
+//   message: 'Hi everybody'
+// }
+// var Messages = [];
+// Messages.push(block);
+// Collection.set(room, Messages);
+// var block2 = {
+//   sent: "Rahul",
+//   timestamp: 15365984,
+//   message: "Bye",
+// };
+// var addMessage = (room) => {
+//   return room;
+// };
+// Messages.push(block2);
+// Collection[room]= Messages;
+// var M = Collection.get(addMessage('Sayam'));
+// // console.log(Collection);
+// var AllUser=new Map();
+// var user = {
+//     username: "Sayam",
+//     room: "AdminsofStudlife",
+//     id:"qSDSFGHAWE95"
+// }
+// AllUser.set(user.id, user);
+// console.log(`User is equal to\n${ AllUser.get(user.id) }`);
+
+// var Rooms = [];
+// Rooms.push({ roomName: "Admin", official: true });
+// Rooms.push({ roomName: "Panel", official: true });
+// Rooms.push({ roomName: "Bots", official: false });
+// if (!Rooms.includes({ roomName: "Bots" })) {
+// Rooms.push("total");
+// }
+// console.log(Rooms);
+console.log(new Date().getTime());

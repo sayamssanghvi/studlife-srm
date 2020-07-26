@@ -10,7 +10,7 @@ const userRouter = require("./routers/userRouter");
 const cors = require("cors");
 const Filter = require('bad-words');
 var serviceAccount = require("../serviceAccountKey.json");
-var { AllUser,User,Rooms,Collection,addUser, removeUser,addMessage } = require('./utils/user');
+var { User,Collection,addUser, removeUser,addMessage,addUsertoTotal,removeUserFromTotal,UsersInCurrentRoom } = require('./utils/user');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -30,27 +30,26 @@ app.use(teacherRouter);
 app.use(userRouter);
 
 io.on('connection', (socket) => {
-  AllUser++;
-  console.log("TotalUsers="+AllUser);
+  
+  addUsertoTotal();
 
-  socket.on('join', ({ username, room }) => {
-    console.log(`JOIN ${username} in ${room}`);
-    
-    socket.join(room);
-    if (Collection.has(room))
-      socket.emit("OldMessages", Collection.get(room));
-    let user = User[socket.id];
-    if(user && user.room){
+  socket.on('join', ({ username, roomName ,official}) => {
+    console.log(`JOIN ${username} in ${roomName}`);
+    socket.join(roomName);
+    if (Collection.has(roomName))
+      socket.emit("OldMessages", Collection.get(roomName));
+    let user = User.get(socket.id);
+    if(user && user.roomName){
       //user connected but due to some bug hasn't left the previous room
       //this will auto leave from his prev rooms if any
-      socket.leave(user.room);
-      console.log(`${user} left room ${user.room}`); //log
-      socket.broadcast.to(user.room).emit("Welcome", user.username + " has left the room"); //broadcast 'left' to #welcome
+      socket.leave(user.roomName);
+      console.log(`${user.username} left room ${user.roomName}`); //log
+      socket.broadcast.to(user.roomName).emit("Welcome", user.username + " has left the room"); //broadcast 'left' to #welcome
       removeUser(socket.id); //removeUser from global maintained for stats
-      io.to(user.room).emit("roomData", User);
+      io.to(user.roomName).emit("roomData", UsersInCurrentRoom(user.roomName));
     }
-    addUser(socket.id, username, room);
-    io.to(room).emit("roomData", User);
+    addUser(socket.id, username, roomName,official);
+    io.to(roomName).emit("roomData", UsersInCurrentRoom(roomName));
   }); 
 
   socket.on('privateMessage', ({ toid, message }) => {
@@ -59,27 +58,26 @@ io.on('connection', (socket) => {
   });  
 
   socket.on('sendMessage', ({ username, message}) => {
-    let user = User[socket.id];
+    let user = User.get(socket.id);
     //null check
-    if(!user || !user.room) {console.log('sendmessage: nullcheck failed'); return;}
-    console.log(`SEND_MSG ${username} ${message} ${user}`);
-    addMessage(socket.id, username, user.room, message);
-    socket.broadcast.to(user.room).emit("receiveMessage", { username, message:filter.clean(message) });
+    if(!user || !user.roomName) {console.log('sendmessage: nullcheck failed'); return;}
+    console.log(`SEND_MSG ${username} ${message} `);
+    addMessage(socket.id, username, user.roomName, filter.clean(message));
+    socket.broadcast.to(user.roomName).emit("receiveMessage", { username, message:filter.clean(message)});
   });
 
   socket.on('leave', () => {
-    let user = User[socket.id];
-    if(!user || !user.room) return;
-    socket.leave(user.room);
-    console.log(`${user} left`); //log
-    socket.broadcast.to(user.room).emit("Welcome", user.username + " has left the room"); //broadcast 'left' to #welcome
+    let user = User.get(socket.id);
+    if(!user || !user.roomName) return;
+    socket.leave(user.roomName);
+    console.log(`${user.username} left`); //log
+    socket.broadcast.to(user.roomName).emit("Welcome", user.username + " has left the room"); //broadcast 'left' to #welcome
     removeUser(socket.id); //delete User[socket.id]
-    io.to(user.room).emit("roomData", User); 
+    io.to(user.roomName).emit("roomData", UsersInCurrentRoom(user.roomName)); 
   });
 
   socket.on('disconnect', () => {
-    AllUser--;
-    console.log("Total User=", AllUser);
+    removeUserFromTotal();
   });
 });
 

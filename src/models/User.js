@@ -27,9 +27,10 @@ const Schema = new mongoose.Schema({
 });
 
 Schema.methods.getPublicProfile = function () {
-  const user = this;
-  const userObject = user.toObject();
-  delete userObject.password;
+  var user = this;
+  var userObject = user.toObject();
+  delete userObject.__v;
+  delete userObject._id;
   return userObject;
 };
 

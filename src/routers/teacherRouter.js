@@ -13,24 +13,27 @@ const fs = require('fs');
 var router=express.Router();
 var bucketName = "studlifesrm.appspot.com";
 
+//Signing up teachers and Store in MongoDB
 router.post('/teacher/signup', async (req, res) => {
     
     try {
         var teacher = new Teacher(req.body);
         await teacher.save();
-        res.send({status:"User Saved"})
+        res.send({status:"Teacher Saved"})
     } catch (e) {
         console.log(e);
         res.status(500).send(e.toString());
     }
 })
 
+//Assigning the HEAD position to student 
 router.post('/teacher/student/head', Auth, async (req, res) => {
     try {
-        var user = await User.findOne(req.body.email);
+        var user = await User.findOne({ email: req.body.email });
         if (!user)
             return res.status(404).send({ "error": "Please Enter a valid Address" });
         user.mode = "Head";
+        await user.save();
         res.send(user.getPublicProfile());
     } catch (e) {
         console.log(e);
