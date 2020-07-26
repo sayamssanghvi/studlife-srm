@@ -1,3 +1,4 @@
+const admin = require("firebase-admin");
 const express = require("express");
 const Course = require("../models/Course");
 const Ct = require("../models/Ct");
