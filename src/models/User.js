@@ -9,7 +9,6 @@ const Schema = new mongoose.Schema({
     lowercase: true,
     required: true,
     trim: true,
-    unique: true,
   },
   email: {
     type: String,

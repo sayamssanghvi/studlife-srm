@@ -15,15 +15,18 @@ router.post('/user/signup', async (req, res) => {
   try {
     let payload = await admin.auth().verifyIdToken(req.headers.token);
     if (!payload.email)
-      throw new Error("Please Authenticate");
+      return res.status(401).send({status:"Please Authenticate"})
+    var userNames = await User.find({ username: req.body.username });
+    if (userNames)
+      return res.status(409).send({ status: "Please enter Unique username" });
     var user = new User(req.body);
     if (!user)
-      return res.status(404).send({ error: "Please enter valid details" });
+      return res.status(400).send({ error: "Please enter valid details" });
     await user.save();
     res.send({ status: "User Saved" });
   } catch (e) {
     console.log(e);
-    res.send(e.toString());
+    res.status(500).send(e.toString());
   }
 });
 
