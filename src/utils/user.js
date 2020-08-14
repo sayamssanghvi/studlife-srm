@@ -70,6 +70,16 @@ var removeUserFromTotal = () => {
 var getTotalUser = () => {
     return AllUser;
 }
+
+var setCollectionAfterMaintenance = (data) => {
+    if (Collection.size == 0)
+    {
+        console.log("Collection is Empty");
+        console.log("Setting Collection");
+        Collection = data;
+    }
+
+}
 module.exports = {
     AllUser,
     User,
@@ -81,5 +91,6 @@ module.exports = {
     addMessage,
     removeUserFromTotal,
     getTotalUser,
-    UsersInCurrentRoom
+    UsersInCurrentRoom,
+    setCollectionAfterMaintenance
 }

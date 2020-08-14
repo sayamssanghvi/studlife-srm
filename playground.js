@@ -112,4 +112,43 @@
 // Rooms.push("total");
 // }
 // console.log(Rooms);
-console.log(new Date().getTime());
+// console.log(new Date().getTime());
+// var data = new Map();
+// data.set("After Life", {
+//   sent: "Sayam",
+//   message: "Hi sayam",
+//   timestamp: new Date().getTime(),
+// });
+
+// var fs = require('fs');
+
+
+
+
+// async function main()
+// {
+//   await write("./backup-messages", Object.fromEntries(data));
+// }
+
+// main();
+
+// var setCollectionAfterMaintenance = (data) => {
+//     Collection = data;
+//     console.log("Dance");
+//     console.log(Collection);
+// }
+// setCollectionAfterMaintenance(data);
+
+// if (1596729663204 < new Date().getTime())
+//   console.log("Hurray");
+
+var Auth = (req, res, next) => {
+    try {
+        console.log("Auth cleared");
+        next();
+    } catch (e) {
+        res.send({status:"Nope  Auth Error"})
+    }
+}
+
+module.exports = Auth;

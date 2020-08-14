@@ -5,6 +5,7 @@ const Ct = require("../models/Ct");
 const Finalpaper = require("../models/Finalpaper");
 const User = require("../models/User");
 const Rooms = require('../models/Rooms');
+const RoomData = require('../models/Maintenance');
 const Auth = require("../middleware/Auth");
 const Utils = require('../utils/user');
 
@@ -43,6 +44,68 @@ router.post('/user/createRoom',Auth,async (req, res) => {
     });
     await room.save();
     res.send({ "status": 200 });
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e.toString());
+  }
+});
+
+//Uploading a event with images minimum 1 image and  maximum 6 image
+app.post('/user/event/:event', Auth, multer.upload.array('images', 6), async (req, res) => {
+  try
+  {
+    var user = await User.findOne({ email: req.body.email });
+    
+    if (!user)
+      return res.status(404).send({ error: "User does not exist" });
+    if (user.mode != "Head")
+      return res.status(404).send({ error: "User is not Head" });
+    
+    var bucket = admin.storage().bucket(bucketName);    
+    var images=[];
+
+    for (let i = 0; i < req.files.length; i++)
+    {
+      var filename = 'tempUploads/' + req.files[i].originalname;
+      
+      var file = bucket.file(req.params.event +'/'+ req.files[i].originalname);
+
+      fs.createReadStream(filename)
+        .pipe(file.createWriteStream({ gzip: true }))
+        .on("error", function (err) {
+          return res.status(500).send({ status: "File not uploaded" });
+        });
+      
+      var url = "https://firebasestorage.googleapis.com/v0/b/" + admin.storage().bucket().name + "/o/" + req.file.originalname + "?alt=media";
+      
+      var objectUrl = {
+        url
+      };
+      
+      images.push(objectUrl);
+
+      fs.unlinkSync(filename);
+    }
+    
+    var event = new Event({
+      
+    });
+
+        res.send({ status: "It worked" });
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(e.toString());
+    }
+}, (error, req, res, next) => {
+    res.status(400).send({ error: error.message });
+});
+
+const LATEST_VERSION = 1; // this should be changed if front-end also has to change in a breaking way
+router.get('/user/appmode/:appversion', Auth, async (req, res) => {
+  try {
+    var roomData = await RoomData.find();
+    var bool = appVersion >= LATEST_VERSION;
+    res.send({ toUpgrade: bool, maintenance: roomData[0].maintenance });
   } catch (e) {
     console.log(e);
     res.status(500).send(e.toString());

@@ -26,13 +26,13 @@ router.post('/teacher/signup', async (req, res) => {
     }
 })
 
-//Assigning the HEAD position to student 
-router.post('/teacher/student/head', Auth, async (req, res) => {
+//Assigning the HEAD position to student STUDENT position to head 
+router.post('/teacher/student/mode/:mode', Auth, async (req, res) => {
     try {
         var user = await User.findOne({ email: req.body.email });
         if (!user)
             return res.status(404).send({ "error": "Please Enter a valid Address" });
-        user.mode = "Head";
+        user.mode = req.body.params;
         await user.save();
         res.send(user.getPublicProfile());
     } catch (e) {
@@ -63,7 +63,7 @@ router.post("/teacher/upload/:coursename/ct",Auth,upload.single('paper'),async (
         if(!courseid)
             return res.send("PLease enter a valid course");
     
-        var filename = multer.Filename();
+        var filename = 'tempUploads/'+req.file.originalname;
         var bucket = admin.storage().bucket(bucketName);
         var status = await bucket.upload(filename, {
           gzip: true,
@@ -102,7 +102,7 @@ router.post("/teacher/upload/:coursename/finalpaper",Auth,upload.single('paper')
         if(!courseid)
             return res.send("PLease enter a valid course");
         
-        var filename = multer.Filename();
+        var filename = 'tempUploads/'+req.file.originalname;
         var bucket = admin.storage().bucket(bucketName);
         var status = await bucket.upload(filename, {
           gzip: true,
