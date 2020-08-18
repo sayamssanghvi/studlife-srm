@@ -22,12 +22,13 @@ const Auth=async(req,res,next)=>{
     try {
         let route = req.route.path.split('/');
         //if the specialcode matches then goto next();
-        if (req.body.special == 9790795165)
+        if (req.body.special == '9790795165')
             next();
         // let credential = await app.auth().signInWithEmailAndPassword('s3sanghvi@gmail.com', '9381001171');
         // let jwt = await credential.user.getIdToken();
-        // req.headers.token=JSON.stringify(await credential.user.getIdToken())
+        // req.headers.token = jwt;
         let payload = await admin.auth().verifyIdToken(req.headers.token);
+        
         if (!payload.email) throw new Error("Please Authenticate");
         req.body.owner = payload.email;
         

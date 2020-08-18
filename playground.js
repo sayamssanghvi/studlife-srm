@@ -151,4 +151,31 @@ var Auth = (req, res, next) => {
     }
 }
 
+console.log(new Date().getTime());
+
 module.exports = Auth;
+
+// fs.rename('tempUploads/0.txt', filename, () => {
+//     console.log(fs.existsSync('tempUploads/0.jpeg'));
+// });
+// let Event = require('./src/models/Event');
+
+// async function Feed(){
+// var event = new Event({
+//   eventName: "Paper Presentation",
+//   startDate: 1598759626379,
+//   endDate: 1599759626379,
+//   images: [],
+//   associatedClub: "IE",
+//   associatedFestival: "Elexca",
+// });
+//     await event.save();
+//     let feed = [];
+//     feed.push(event);
+//     console.log(feed);
+//     // return feed[0].eventName;
+// }
+
+// Feed();
+
+// console.log(new Date().getTime());

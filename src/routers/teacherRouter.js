@@ -63,7 +63,7 @@ router.post("/teacher/upload/:coursename/ct",Auth,upload.single('paper'),async (
         if(!courseid)
             return res.send("PLease enter a valid course");
     
-        var filename = 'tempUploads/'+req.file.originalname;
+        var filename = req.file.originalname;
         var bucket = admin.storage().bucket(bucketName);
         var status = await bucket.upload(filename, {
           gzip: true,
@@ -102,7 +102,7 @@ router.post("/teacher/upload/:coursename/finalpaper",Auth,upload.single('paper')
         if(!courseid)
             return res.send("PLease enter a valid course");
         
-        var filename = 'tempUploads/'+req.file.originalname;
+        var filename = req.file.originalname;
         var bucket = admin.storage().bucket(bucketName);
         var status = await bucket.upload(filename, {
           gzip: true,

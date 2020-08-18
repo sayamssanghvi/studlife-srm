@@ -22,19 +22,23 @@ var Schema = new mongoose.Schema({
                 throw new Error("Please enter a valid Date");
         }
     },
-    images: [
-        {
-            url: {
-                type: String,
-            }
-        }
-    ],
+    images: {
+        type: Array
+    },
     associatedClub: {
         type: String,
     },
     associatedFestival: {
         type: String
+    },
+    rules: {
+        type:String   
+    },
+    googleFormLink: {
+        type:String
     }
+},{
+    timestamps:true
 });
 
 var Event = mongoose.model('Event', Schema);

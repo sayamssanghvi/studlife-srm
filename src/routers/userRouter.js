@@ -1,15 +1,21 @@
 const admin = require("firebase-admin");
 const express = require("express");
+const Auth = require("../middleware/Auth");
+const multer = require('../middleware/multer');
 const Course = require("../models/Course");
 const Ct = require("../models/Ct");
 const Finalpaper = require("../models/Finalpaper");
 const User = require("../models/User");
 const Rooms = require('../models/Rooms');
-const RoomData = require('../models/Maintenance');
-const Auth = require("../middleware/Auth");
+const Maintenance = require('../models/Maintenance');
+const Event = require('../models/Event');
+const Announcement = require('../models/Announcement');
 const Utils = require('../utils/user');
+const FileStorage = require('../utils/fileStorage');
 
 const router = express.Router();
+
+var bucketName = "studlifesrm.appspot.com";
 
 //Storing user on MongoDB
 router.post('/user/signup', async (req, res) => {
@@ -50,10 +56,10 @@ router.post('/user/createRoom',Auth,async (req, res) => {
   }
 });
 
-//Uploading a event with images minimum 1 image and  maximum 6 image
-app.post('/user/event/:event', Auth, multer.upload.array('images', 6), async (req, res) => {
-  try
-  {
+//Uploading a event with images minimum 1 image and maximum 6 images
+router.post("/user/create/event", Auth,multer.uploadImages.array("images", 6),async (req, res) => {
+  try {
+    
     var user = await User.findOne({ email: req.body.email });
     
     if (!user)
@@ -61,49 +67,66 @@ app.post('/user/event/:event', Auth, multer.upload.array('images', 6), async (re
     if (user.mode != "Head")
       return res.status(404).send({ error: "User is not Head" });
     
-    var bucket = admin.storage().bucket(bucketName);    
-    var images=[];
+    let images = await FileStorage.storeFile("Events", bucketName, req.files, req.body.eventname);
 
-    for (let i = 0; i < req.files.length; i++)
-    {
-      var filename = 'tempUploads/' + req.files[i].originalname;
-      
-      var file = bucket.file(req.params.event +'/'+ req.files[i].originalname);
-
-      fs.createReadStream(filename)
-        .pipe(file.createWriteStream({ gzip: true }))
-        .on("error", function (err) {
-          return res.status(500).send({ status: "File not uploaded" });
-        });
-      
-      var url = "https://firebasestorage.googleapis.com/v0/b/" + admin.storage().bucket().name + "/o/" + req.file.originalname + "?alt=media";
-      
-      var objectUrl = {
-        url
-      };
-      
-      images.push(objectUrl);
-
-      fs.unlinkSync(filename);
-    }
-    
     var event = new Event({
-      
+      eventName: req.body.eventname,
+      startDate: req.body.startdate,
+      endDate: req.body.enddate,
+      images,
+      associatedClub: req.body.associatedclub,
+      associatedFestival: req.body.associatedfestival,
+      rules: req.body.rules,
+      googleFormLink:req.body.googleformlink
     });
 
-        res.send({ status: "It worked" });
+    await event.save();
+
+    res.send({ event });
     } catch (e) {
-        console.log(e);
-        res.status(500).send(e.toString());
+      console.log(e);
+      res.status(500).send(e.toString());
     }
-}, (error, req, res, next) => {
+  },
+  (error, req, res, next) => {
     res.status(400).send({ error: error.message });
+  }
+);
+
+router.post('/user/create/announcement', Auth, multer.uploadImages.array('images', 1), async (req, res) => {
+  try {
+    
+    var user = await User.findOne({ email: req.body.email });
+    
+    if (!user)
+      return res.status(404).send({ error: "User does not exist" });
+    if (user.mode != "Head")
+      return res.status(404).send({ error: "User is not Head" });
+    
+    let name = req.body.title + new Date().getTime(); 
+    let images = await FileStorage.storeFile("Announcements", bucketName, req.files, name);
+
+    var announcement = new Announcement({
+      title: req.body.title,
+      message: req.body.message,
+      images,
+      userName: req.user.username
+    });
+
+    await announcement.save();
+
+    res.send({ announcement });
+
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e.toString());
+  }
 });
 
 const LATEST_VERSION = 1; // this should be changed if front-end also has to change in a breaking way
 router.get('/user/appmode/:appversion', Auth, async (req, res) => {
   try {
-    var roomData = await RoomData.find();
+    var roomData = await Maintenance.find();
     var bool = appVersion >= LATEST_VERSION;
     res.send({ toUpgrade: bool, maintenance: roomData[0].maintenance });
   } catch (e) {
