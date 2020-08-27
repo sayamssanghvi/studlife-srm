@@ -142,18 +142,18 @@
 // if (1596729663204 < new Date().getTime())
 //   console.log("Hurray");
 
-var Auth = (req, res, next) => {
-    try {
-        console.log("Auth cleared");
-        next();
-    } catch (e) {
-        res.send({status:"Nope  Auth Error"})
-    }
-}
+// var Auth = (req, res, next) => {
+//     try {
+//         console.log("Auth cleared");
+//         next();
+//     } catch (e) {
+//         res.send({status:"Nope  Auth Error"})
+//     }
+// }
 
-console.log(new Date().getTime());
+// console.log(new Date().getTime());
 
-module.exports = Auth;
+// module.exports = Auth;
 
 // fs.rename('tempUploads/0.txt', filename, () => {
 //     console.log(fs.existsSync('tempUploads/0.jpeg'));
@@ -179,3 +179,17 @@ module.exports = Auth;
 // Feed();
 
 // console.log(new Date().getTime());
+
+// const fs = require('fs');
+// if (fs.existsSync('./src/middleware/Auth.js')) {
+//     console.log('It exists');
+// }
+
+// fs.mkdirSync(new Date().getTime().toString());
+
+let Collection=new Map();
+Collection.set('Admins', 'hello');
+Collection.set('Studs', 'Welloc');
+let data = new Map();
+data = Collection;
+console.log(data);

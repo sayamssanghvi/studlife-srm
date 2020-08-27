@@ -10,7 +10,7 @@ const userRouter = require("./routers/userRouter");
 const cors = require("cors");
 const Filter = require('bad-words');
 var serviceAccount = require("../serviceAccountKey.json");
-var { User,Collection,addUser, removeUser,addMessage,addUsertoTotal,removeUserFromTotal,UsersInCurrentRoom } = require('./utils/user');
+var { User,Collection,addUser, removeUser,addMessage,addUsertoTotal,removeUserFromTotal,UsersInCurrentRoom,getCollectionAfterMaintenance } = require('./utils/user');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -36,6 +36,7 @@ io.on('connection', (socket) => {
   socket.on('join', ({ username, roomName ,official}) => {
     console.log(`JOIN ${username} in ${roomName}`);
     socket.join(roomName);
+    Collection=getCollectionAfterMaintenance();
     if (Collection.has(roomName))
       socket.emit("OldMessages", Collection.get(roomName));
     let user = User.get(socket.id);

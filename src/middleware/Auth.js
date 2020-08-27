@@ -21,9 +21,6 @@ const Auth=async(req,res,next)=>{
 
     try {
         let route = req.route.path.split('/');
-        //if the specialcode matches then goto next();
-        if (req.body.special == '9790795165')
-            next();
         // let credential = await app.auth().signInWithEmailAndPassword('s3sanghvi@gmail.com', '9381001171');
         // let jwt = await credential.user.getIdToken();
         // req.headers.token = jwt;
@@ -33,7 +30,7 @@ const Auth=async(req,res,next)=>{
         req.body.owner = payload.email;
         
         var user;
-        if (route[1] == "admin") {
+        if (route[1] == "admin" && req.body.special== process.env.AUTH_SECRET_KEY) {
             user = await Admin.findOne({ email: payload.email });
             req.admin = user;
         }

@@ -1,18 +1,17 @@
 var admin = require("firebase-admin");
-var serviceAccount = require("../../serviceAccountKey.json");
 var fs = require('fs');
 
-async function renameFile(oldFilename, index){
+async function renameFile(oldFilename, index,eventName){
   if (oldFilename.match(/\.jpg/)) {
-    let filename =  index + ".jpg";
+    let filename = eventName +index + ".jpg";
     fs.renameSync(oldFilename, filename);
     return Promise.resolve(filename);
   } else if (oldFilename.match(/\.jpeg/)) {
-    let filename = index + ".jpeg";
+    let filename = eventName +index + ".jpeg";
     fs.renameSync(oldFilename, filename);
     return Promise.resolve(filename);
   }else if(oldFilename.match(/\.png/)) {
-    let filename = index + ".png";
+    let filename = eventName + index + ".png";
     fs.renameSync(oldFilename, filename);
     return Promise.resolve( filename);
   }
@@ -24,7 +23,7 @@ const storeFile = async (activity,bucketName,files,eventName) => {
 
     for (let i = 0; i < files.length; i++) {
 
-      let newFilename = await renameFile(files[i].originalname, i);
+      let newFilename = await renameFile(files[i].originalname, i,eventName);
 
       let file = bucket.file(activity+"/"+eventName + "/" + newFilename);
 
@@ -39,7 +38,7 @@ const storeFile = async (activity,bucketName,files,eventName) => {
 
       images.push(url);
 
-      fs.unlinkSync(newFilename); 
+      fs.unlinkSync(newFilename);
     }
     return images;
 }

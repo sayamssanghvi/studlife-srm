@@ -74,12 +74,14 @@ var getTotalUser = () => {
 var setCollectionAfterMaintenance = (data) => {
     if (Collection.size == 0)
     {
-        console.log("Collection is Empty");
-        console.log("Setting Collection");
         Collection = data;
     }
-
 }
+
+var getCollectionAfterMaintenance = () => {
+    return Collection;
+}
+
 module.exports = {
     AllUser,
     User,
@@ -92,5 +94,6 @@ module.exports = {
     removeUserFromTotal,
     getTotalUser,
     UsersInCurrentRoom,
-    setCollectionAfterMaintenance
+    setCollectionAfterMaintenance,
+    getCollectionAfterMaintenance,
 }

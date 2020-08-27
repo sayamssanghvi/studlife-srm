@@ -40,7 +40,7 @@ router.post('/user/signup', async (req, res) => {
 //Creating official Rooms
 router.post('/user/createRoom',Auth,async (req, res) => {
   try {
-    var user = await User.findOne({email:req.body.email});
+    var user = req.user;
     if (!user)
       return res.status(404).send({ error: "User does not exist" });
     if (user.mode != "Head")
@@ -60,7 +60,7 @@ router.post('/user/createRoom',Auth,async (req, res) => {
 router.post("/user/create/event", Auth,multer.uploadImages.array("images", 6),async (req, res) => {
   try {
     
-    var user = await User.findOne({ email: req.body.email });
+    var user = req.user;
     
     if (!user)
       return res.status(404).send({ error: "User does not exist" });
@@ -96,7 +96,7 @@ router.post("/user/create/event", Auth,multer.uploadImages.array("images", 6),as
 router.post('/user/create/announcement', Auth, multer.uploadImages.array('images', 1), async (req, res) => {
   try {
     
-    var user = await User.findOne({ email: req.body.email });
+    var user = req.user;
     
     if (!user)
       return res.status(404).send({ error: "User does not exist" });
@@ -110,7 +110,7 @@ router.post('/user/create/announcement', Auth, multer.uploadImages.array('images
       title: req.body.title,
       message: req.body.message,
       images,
-      userName: req.user.username
+      userName: user.username
     });
 
     await announcement.save();
@@ -193,6 +193,26 @@ router.get('/user/rooms/secondary', Auth, async (req, res) => {
     };
     res.send( data );
   } catch (e){
+    console.log(e);
+    res.status(500).send(e.toString());
+  }
+});
+
+router.get('/user/events', Auth, async (req, res) => {
+  try {
+    let events = await Event.find().sort({ startDate: 1 });
+    res.send({events});
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e.toString());
+  }
+});
+
+router.get("/user/announcements", Auth, async (req, res) => {
+  try {
+    let announcement = await Announcement.find().sort({createdAt: -1 });
+    res.send({ announcement });
+  } catch (e) {
     console.log(e);
     res.status(500).send(e.toString());
   }
