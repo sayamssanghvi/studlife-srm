@@ -22,6 +22,9 @@ var Schema = new mongoose.Schema({
                 throw new Error("Please enter a valid Date");
         }
     },
+    description:{
+        type:String
+    },
     images: {
         type: Array
     },

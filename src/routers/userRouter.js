@@ -73,6 +73,7 @@ router.post("/user/create/event", Auth,multer.uploadImages.array("images", 6),as
       eventName: req.body.eventname,
       startDate: req.body.startdate,
       endDate: req.body.enddate,
+      description:req.body.description,
       images,
       associatedClub: req.body.associatedclub,
       associatedFestival: req.body.associatedfestival,
@@ -127,7 +128,7 @@ const LATEST_VERSION = 1; // this should be changed if front-end also has to cha
 router.get('/user/appmode/:appversion', Auth, async (req, res) => {
   try {
     var roomData = await Maintenance.find();
-    var bool = appVersion >= LATEST_VERSION;
+    var bool = req.params.appVersion >= LATEST_VERSION;
     res.send({ toUpgrade: bool, maintenance: roomData[0].maintenance });
   } catch (e) {
     console.log(e);

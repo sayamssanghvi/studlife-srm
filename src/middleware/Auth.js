@@ -1,9 +1,9 @@
 const admin = require("firebase-admin");
 var firebase = require('firebase');
 var auth = require('firebase/auth');
-const Admin = require('../models/Admin');
-const Teacher = require('../models/Teacher');
-const User = require('../models/User');
+const Admin = require('../../models/Admin');
+const Teacher = require('../../models/Teacher');
+const User = require('../../models/User');
 
 var firebaseConfig = {
   apiKey: "AIzaSyD9s3PS2xfCb1vp7Z8mvFHpsg-_P_ggKYo",
