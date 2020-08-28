@@ -24,17 +24,20 @@ const Auth=async(req,res,next)=>{
         // let credential = await app.auth().signInWithEmailAndPassword('s3sanghvi@gmail.com', '9381001171');
         // let jwt = await credential.user.getIdToken();
         // req.headers.token = jwt;
+        if (req.body.special == process.env.AUTH_SECRET_KEY) {
+            return next();
+        }
+        
         let payload = await admin.auth().verifyIdToken(req.headers.token);
         
-        if (!payload.email) throw new Error("Please Authenticate");
+
+        if (!payload.email)
+            throw new Error("Please Authenticate");
         req.body.owner = payload.email;
         
         var user;
-        if (route[1] == "admin" && req.body.special== process.env.AUTH_SECRET_KEY) {
-            user = await Admin.findOne({ email: payload.email });
-            req.admin = user;
-        }
-        else if (route[1] == "teacher") {
+
+        if (route[1] == "teacher") {
             user = await Teacher.findOne({ email: payload.email });
             req.teacher = user;
         } 
@@ -43,7 +46,7 @@ const Auth=async(req,res,next)=>{
             req.user = user;
         } 
         if(!user)
-            res.status(404).send("Invalid Authentication");
+            return res.status(404).send("Invalid Authentication");
         next();
     }catch(e){
         console.log(e);

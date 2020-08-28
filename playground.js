@@ -193,3 +193,4 @@ Collection.set('Studs', 'Welloc');
 let data = new Map();
 data = Collection;
 console.log(data);
+
