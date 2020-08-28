@@ -1,9 +1,8 @@
 const admin = require("firebase-admin");
 var firebase = require('firebase');
 var auth = require('firebase/auth');
-const Admin = require('../../models/Admin');
-const Teacher = require('../../models/Teacher');
-const User = require('../../models/User');
+const Teacher = require('../models/Teacher');
+const User = require('../models/User');
 
 var firebaseConfig = {
   apiKey: "AIzaSyD9s3PS2xfCb1vp7Z8mvFHpsg-_P_ggKYo",
@@ -27,7 +26,7 @@ const Auth=async(req,res,next)=>{
         if (req.body.special == process.env.AUTH_SECRET_KEY) {
             return next();
         }
-        
+
         let payload = await admin.auth().verifyIdToken(req.headers.token);
         
 
