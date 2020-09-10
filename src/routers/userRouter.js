@@ -24,9 +24,13 @@ router.post('/user/signup', async (req, res) => {
     if (!payload.email)
       return res.status(401).send({status:"Please Authenticate"})
     var userNames = await User.find({ username: req.body.username });
-    if (userNames)
+    if (!userNames)
       return res.status(409).send({ status: "Please enter Unique username" });
-    var user = new User(req.body);
+    var user = new User({
+      username:req.body.username,
+      email:payload.email,
+      mode:req.body.mode
+    });
     if (!user)
       return res.status(400).send({ error: "Please enter valid details" });
     await user.save();
