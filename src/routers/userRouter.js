@@ -22,8 +22,8 @@ router.post('/user/signup', async (req, res) => {
   try {
     let payload = await admin.auth().verifyIdToken(req.headers.token);
     if (!payload.email)
-      return res.status(401).send({status:"Please Authenticate"})
-    var userNames = await User.find({ username: req.body.username });
+      return res.status(401).send({ status: "Please Authenticate" });
+    var userNames = await User.findOne({ username: req.body.username });
     if (userNames!=undefined)
       return res.status(409).send({ status: "Please enter Unique username" });
     var user = new User({
